@@ -9,8 +9,15 @@ const loadCategories = () => {
 const loadCategoryVideos = (categoryId) => {
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${categoryId}`)
         .then(res => res.json())
-        .then(data => displayVideoCards(data.category))
+        .then(data => { 
+            const activeBtn = document.getElementById('btn-' + categoryId);
+            removeActiveClass();
+            activeBtn.classList.add("active");
+            console.log(activeBtn);
+            displayVideoCards(data.category) 
+        })
         .catch(error => console.log(error))
+
 };
 
 // displaying categories
@@ -21,7 +28,7 @@ const displayCategories = (items) => {
         // console.log(item);
         const categoryContainer = document.createElement('div');
         categoryContainer.innerHTML = `
-            <button onclick="loadCategoryVideos(${item.category_id})" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 ease-in-out">
+            <button id="btn-${item.category_id}" onclick="loadCategoryVideos(${item.category_id})" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 ease-in-out">
             ${item.category}
             </button>
         `;
@@ -42,19 +49,20 @@ const loadVideoCards = () => {
 
 // displaying video cards
 const displayVideoCards = (videos) => {
-    console.log(videos);
+    // console.log(videos);
     const videoContainer = document.getElementById('video-container');
     videoContainer.innerHTML = ''; // Clear previous content
-    
-        if(videos.length == 0) {
-            videoContainer.classList.remove('grid');
-            videoContainer.innerHTML = `
+
+    if (videos.length == 0) {
+        videoContainer.classList.remove('grid');
+        videoContainer.innerHTML = `
             <div class="flex flex-col justify-center items-center text-center w-full h-96 space-y-5">
                 <img class="" src="images/Icon.png" alt="No content">
                 <h1 class="text-4xl font-bold text-gray-700">Oops!! Sorry, There is no content here</h1>
             </div>
             `;
-        }
+            return;
+    }
 
     videos.forEach(video => {
         const div = document.createElement('div');
@@ -83,35 +91,6 @@ const displayVideoCards = (videos) => {
     });
 };
 
-
-// const upload = (sec) => {
-//     const years = Math.floor(sec / 31536000);
-//     const months = Math.floor(sec / 2592000);
-//     const weeks = Math.floor(sec / 604800);
-//     const days = Math.floor(sec / 86400);
-//     const hours = Math.floor(sec / 3600);
-//     const minutes = Math.floor((sec % 3600) / 60);
-
-//     if (years > 0) {
-//         return `${years} years ago`;
-//     }
-//     if (months > 0) {
-//         return `${months} months ago`;
-//     }
-//     if (weeks > 0) {
-//         return `${weeks} weeks ago`;
-//     }
-//     if (days > 0) {
-//         return `${days} days ago`;
-//     }
-//     if (hours > 0 && hours < 24) {
-//         return `${hours} hours ago`;
-//     }
-//     if (minutes > 0 && minutes < 60) {
-//         return `${minutes} minutes ago`;
-//     }
-// }
-
 const upload = (sec) => {
     const intervals = [
         { label: 'year', seconds: 31536000 },
@@ -132,6 +111,12 @@ const upload = (sec) => {
     return 'just now';
 };
 
+const removeActiveClass = () => {
+    const activeBtn = document.querySelector('.active');
+    if (activeBtn) {
+        activeBtn.classList.remove('active');
+    }
+}
 
 
 
