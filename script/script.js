@@ -6,16 +6,28 @@ const loadCategories = () => {
         .catch(error => console.log(error))
 };
 
+const loadCategoryVideos = (categoryId) => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${categoryId}`)
+        .then(res => res.json())
+        .then(data => displayVideoCards(data.category))
+        .catch(error => console.log(error))
+};
+
 // displaying categories
-const displayCategories = (categories) => {
-    const categoryContainer = document.getElementById('category-container');
+const displayCategories = (items) => {
+    const categories = document.getElementById('categories');
 
-    categories.forEach(item => {
-        const btn = document.createElement('button');
-        btn.classList.add('btn');
-        btn.innerText = item.category;
+    items.forEach(item => {
+        // console.log(item);
+        const categoryContainer = document.createElement('div');
+        categoryContainer.innerHTML = `
+            <button onclick="loadCategoryVideos(${item.category_id})" class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300 ease-in-out">
+            ${item.category}
+            </button>
+        `;
+        // btn.innerText = item.category;
 
-        categoryContainer.append(btn);
+        categories.append(categoryContainer);
     });
 };
 
@@ -30,7 +42,19 @@ const loadVideoCards = () => {
 
 // displaying video cards
 const displayVideoCards = (videos) => {
+    console.log(videos);
     const videoContainer = document.getElementById('video-container');
+    videoContainer.innerHTML = ''; // Clear previous content
+    
+        if(videos.length == 0) {
+            videoContainer.classList.remove('grid');
+            videoContainer.innerHTML = `
+            <div class="flex flex-col justify-center items-center text-center w-full h-96 space-y-5">
+                <img class="" src="images/Icon.png" alt="No content">
+                <h1 class="text-4xl font-bold text-gray-700">Oops!! Sorry, There is no content here</h1>
+            </div>
+            `;
+        }
 
     videos.forEach(video => {
         const div = document.createElement('div');
@@ -46,10 +70,10 @@ const displayVideoCards = (videos) => {
                 <div>
                     <h3 class="text-base font-bold">${video.title}</h3>
                     <div class="flex items-center gap-2">
-                        <p class="text-sm text-gray-600">${video.authors[0].profile_name}</p>
+                        <p class="text-sm text-gray-300">${video.authors[0].profile_name}</p>
                         ${video.authors[0].verified === true ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=96&id=D9RtvkuOe31p&format=png" alt="Verified"></img>` : ""}
                     </div>
-                    <p class="text-sm text-gray-600">${video.others.views} views <span class="text-xl">·</span> ${video.others.posted_date.length == 0 ? `Pending` : `${upload(video.others.posted_date)}`}</p>
+                    <p class="text-sm text-gray-300">${video.others.views} views <span class="text-xl">·</span> ${video.others.posted_date.length == 0 ? `Pending` : `${upload(video.others.posted_date)}`}</p>
 
                 </div>
             </div>
