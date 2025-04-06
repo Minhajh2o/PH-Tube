@@ -65,31 +65,50 @@ const displayVideoCards = (videos) => {
     }
 
     videos.forEach(video => {
+        // console.log(video);
         const div = document.createElement('div');
         div.classList.add('video-card');
         div.innerHTML = `
-            <figure class="h-[150px] overflow-hidden rounded-lg">
-                <img class="w-full object-cover" src="${video.thumbnail}" alt="">
+            <figure class="relative h-[150px] overflow-hidden rounded-lg">
+            <img class="w-full object-cover" src="${video.thumbnail}" alt="">
+            <div onclick="loadVideoDetails('${video.video_id}')" style="cursor: pointer;" class="absolute bottom-2 right-2 bg-gray-800 text-white text-sm px-2 py-1 rounded-lg">Description</div>
             </figure>
             <div class="flex gap-3 py-2">
-                <figure class="h-8 w-8 overflow-hidden rounded-full mt-2">
-                    <img class="w-full h-full object-cover" src="${video.authors[0].profile_picture}" alt="">
-                </figure>
-                <div>
-                    <h3 class="text-base font-bold">${video.title}</h3>
-                    <div class="flex items-center gap-2">
-                        <p class="text-sm text-gray-300">${video.authors[0].profile_name}</p>
-                        ${video.authors[0].verified === true ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=96&id=D9RtvkuOe31p&format=png" alt="Verified"></img>` : ""}
-                    </div>
-                    <p class="text-sm text-gray-300">${video.others.views} views <span class="text-xl">·</span> ${video.others.posted_date.length == 0 ? `Pending` : `${upload(video.others.posted_date)}`}</p>
-
+            <figure class="h-8 w-8 overflow-hidden rounded-full mt-2">
+                <img class="w-full h-full object-cover" src="${video.authors[0].profile_picture}" alt="">
+            </figure>
+            <div>
+                <h3 class="text-base font-bold">${video.title}</h3>
+                <div class="flex items-center gap-2">
+                <p class="text-sm text-gray-300">${video.authors[0].profile_name}</p>
+                ${video.authors[0].verified === true ? `<img class="w-4 h-4" src="https://img.icons8.com/?size=96&id=D9RtvkuOe31p&format=png" alt="Verified"></img>` : ""}
                 </div>
+                <p class="text-sm text-gray-300">${video.others.views} views <span class="text-xl">·</span> ${video.others.posted_date.length == 0 ? `Pending` : `${upload(video.others.posted_date)}`}</p>
+
+            </div>
             </div>
             `;
         videoContainer.append(div);
 
     });
 };
+
+// load Video Details 
+const loadVideoDetails = (video_id) => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/video/${video_id}`)
+        .then(res => res.json())
+        .then(data => displayVideoDetails(data.video))
+        .catch(error => console.log(error))
+};
+
+// displaying video details
+const displayVideoDetails = (video) => {
+    console.log(video);
+    const modalDescription = document.getElementById('modal-description');
+    modalDescription.innerText = video.description;
+    const detailsModal = document.getElementById('details_modal');
+    detailsModal.showModal();
+}
 
 const upload = (sec) => {
     const intervals = [
